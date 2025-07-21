@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, FormEvent, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { motion } from 'framer-motion';
 
 interface Jogo {
   id: string;

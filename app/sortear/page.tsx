@@ -45,8 +45,8 @@ export default function SortearPage() {
     setRafflingItem(poolItems[0]);
 
     const chosenWinner = poolItems[Math.floor(Math.random() * poolItems.length)];
-    const raffleDuration = 4000; // 4 segundos
-    let intervalTime = 75;
+    const raffleDuration = 4000;
+    const intervalTime = 75;
 
     const raffleInterval = setInterval(() => {
       const randomItem = poolItems[Math.floor(Math.random() * poolItems.length)];
