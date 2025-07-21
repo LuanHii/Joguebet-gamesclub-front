@@ -10,6 +10,7 @@ export function NavBar() {
         <nav className="flex items-center space-x-6 text-sm font-medium">
           <Link href="/" className="transition-colors hover:text-foreground/80 text-foreground">Já Jogados</Link>
           <Link href="/adicionar" className="transition-colors hover:text-foreground/80 text-foreground">Adicionar Jogo</Link>
+          <Link href="/sortear" className="transition-colors hover:text-foreground/80 text-foreground">Sortear Jogo</Link>
         </nav>
       </div>
     </header>

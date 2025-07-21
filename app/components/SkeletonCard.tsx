@@ -1,4 +1,3 @@
-// app/components/SkeletonCard.tsx
 export function SkeletonCard() {
     return (
       <div className="bg-slate-800/50 rounded-lg p-6 animate-pulse">

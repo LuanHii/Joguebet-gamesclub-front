@@ -68,7 +68,6 @@ export default function AdicionarJogoPage() {
             Adicionar Novo Jogo
           </h1>
 
-          {/* Campo Nome */}
           <div>
             <label htmlFor="nome" className="block text-sm font-medium text-slate-300 mb-2">
               Nome do Jogo
@@ -84,7 +83,6 @@ export default function AdicionarJogoPage() {
             />
           </div>
 
-          {/* Campo Gênero */}
           <div>
             <label htmlFor="genero" className="block text-sm font-medium text-slate-300 mb-2">
               Gênero
@@ -100,7 +98,6 @@ export default function AdicionarJogoPage() {
             />
           </div>
 
-          {/* Campo Nota */}
           <div>
             <label htmlFor="nota" className="block text-sm font-medium text-slate-300 mb-2">
               Nota (0-10)
@@ -118,7 +115,6 @@ export default function AdicionarJogoPage() {
             />
           </div>
 
-          {/* Botão de Envio */}
           <button
             type="submit"
             disabled={isLoading}
@@ -137,7 +133,6 @@ export default function AdicionarJogoPage() {
             )}
           </button>
 
-          {/* Mensagens de Feedback */}
           {success && <p className="text-green-400 text-center">{success}</p>}
           {error && <p className="text-red-400 text-center">{error}</p>}
         </form>
