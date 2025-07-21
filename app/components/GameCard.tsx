@@ -1,9 +1,8 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { Jogo } from '@/types'; // 1. IMPORTAMOS O TIPO JOGO DA PASTA TYPES (usando o atalho '@')
+import { Jogo } from '@/types';
 
-// 2. A INTERFACE AGORA ESTÁ ÚNICA E CORRETA
 interface GameCardProps {
   jogo: Jogo;
   onEditClick: () => void; 
@@ -26,7 +25,7 @@ export function GameCard({ jogo, onEditClick }: GameCardProps) {
 
   return (
     <motion.article
-      onClick={onEditClick} // Evento de clique está aqui
+      onClick={onEditClick}
       variants={cardVariants}
       whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
       className="bg-slate-800/60 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-lg p-6 cursor-pointer"

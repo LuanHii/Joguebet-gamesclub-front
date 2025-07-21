@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { GameCard } from './components/GameCard';
 import { SkeletonCard } from './components/SkeletonCard';
 import { UpdateModal } from './components/UpdateModal';
-import { Jogo } from '@/types'; // 1. IMPORTAMOS O TIPO JOGO DA PASTA TYPES
+import { Jogo } from '@/types';
 
 export default function HomePage() {
   const [jogos, setJogos] = useState<Jogo[]>([]);
@@ -18,18 +18,16 @@ export default function HomePage() {
       const res = await fetch('https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/jogos'); 
       const data = await res.json();
       
-      // As duas linhas mais importantes para depuração:
       console.log("DADO RECEBIDO:", data);
       console.log("TIPO DO DADO:", typeof data); 
   
-      // Se o tipo for string, precisamos converter de novo
       const jogosArray = typeof data === 'string' ? JSON.parse(data) : data;
   
-      setJogos(jogosArray || []); // Garante que sempre seja um array
+      setJogos(jogosArray || []);
   
     } catch (error) {
       console.error("Erro ao buscar jogos:", error);
-      setJogos([]); // Em caso de erro, define como array vazio
+      setJogos([]);
     } finally {
       setIsLoading(false);
     }

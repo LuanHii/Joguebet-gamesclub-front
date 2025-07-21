@@ -1,26 +1,22 @@
-"use client"; // Esta diretiva é OBRIGATÓRIA para usar hooks como useState e interatividade.
+"use client";
 
 import { useState, FormEvent } from 'react';
 
 export default function AdicionarJogoPage() {
-  // Estados para controlar os valores de cada campo do formulário
   const [nome, setNome] = useState('');
   const [nota, setNota] = useState('');
   const [genero, setGenero] = useState('');
 
-  // Estados para dar feedback ao usuário
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Função que será chamada quando o formulário for enviado
   const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault(); // Previne o recarregamento da página
+    event.preventDefault();
     setIsLoading(true);
     setError(null);
     setSuccess(null);
 
-    // Lógica da nota: se estiver vazio, usa 0.
     const notaFinal = nota.trim() === '' ? 0 : parseFloat(nota);
     
     const dadosDoJogo = {
@@ -31,7 +27,7 @@ export default function AdicionarJogoPage() {
 
     try {
       const response = await fetch(
-        'https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/jogos', // ⚠️ SUBSTITUA PELA SUA URL REAL!
+        'https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/jogos',
         {
           method: 'POST',
           headers: {
@@ -42,13 +38,10 @@ export default function AdicionarJogoPage() {
       );
 
       if (!response.ok) {
-        // Se a resposta não for de sucesso (ex: erro 500, 400)
         throw new Error('Falha ao adicionar o jogo. Verifique os dados e tente novamente.');
       }
 
-      // Se tudo deu certo
       setSuccess('Jogo adicionado com sucesso!');
-      // Limpa os campos do formulário
       setNome('');
       setNota('');
       setGenero('');

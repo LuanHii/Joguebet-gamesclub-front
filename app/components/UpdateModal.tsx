@@ -3,7 +3,6 @@ import { useState, useEffect, FormEvent, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { motion } from 'framer-motion';
 
-// Definindo os tipos para as props
 interface Jogo {
   id: string;
   nome: string;
@@ -15,18 +14,16 @@ interface UpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
   jogo: Jogo | null;
-  onUpdate: () => void; // Função para avisar a página principal que o dado foi atualizado
+  onUpdate: () => void;
 }
 
 export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProps) {
-  // Estados para os campos do formulário
   const [nome, setNome] = useState('');
   const [nota, setNota] = useState('');
   const [genero, setGenero] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Efeito para preencher o formulário quando um jogo é selecionado
   useEffect(() => {
     if (jogo) {
       setNome(jogo.nome);
@@ -44,7 +41,7 @@ export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProp
 
     try {
       const response = await fetch(
-        `https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/jogos/${jogo.id}`, // URL com o ID do jogo
+        `https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/jogos/${jogo.id}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -53,8 +50,8 @@ export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProp
       );
       if (!response.ok) throw new Error('Falha ao atualizar o jogo.');
       
-      onUpdate(); // Avisa a página que a atualização foi um sucesso
-      onClose(); // Fecha o modal
+      onUpdate();
+      onClose();
     } catch (err) {
         if (err instanceof Error) {
             setError(err.message);
