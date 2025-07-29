@@ -42,6 +42,27 @@ export default function HomePage() {
     setIsModalOpen(true);
   };
 
+  const handleDeleteGame = async (gameId: string) => {
+    if (!confirm('Tem certeza que deseja excluir este jogo?')) {
+      return;
+    }
+    try {
+      const response = await fetch(
+        `https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/jogos/${gameId}`,
+        {
+          method: 'DELETE',
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Falha ao deletar o jogo.');
+      }
+      setJogos(prevJogos => prevJogos.filter(jogo => jogo.id !== gameId));
+    } catch (error) {
+      console.error("Erro ao deletar o jogo:", error);
+      alert('Não foi possível excluir o jogo. Tente novamente.');
+    }
+  };
+
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedGame(null);
@@ -66,7 +87,7 @@ export default function HomePage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {jogos.map((jogo) => (
-            <GameCard key={jogo.id} jogo={jogo} onEditClick={() => handleEditClick(jogo)} />
+            <GameCard key={jogo.id} jogo={jogo} onEditClick={() => handleEditClick(jogo)} onDeleteClick={() => handleDeleteGame(jogo.id)} />
           ))}
         </div>
       )}
