@@ -15,9 +15,15 @@ export function ControlPanel({ items, onAddItem, onRemoveItem }: ControlPanelPro
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const newItem = inputValue.trim();
-    if (newItem && !items.includes(newItem)) {
-      onAddItem(newItem);
+    const rawInput = inputValue.trim();
+    if (!rawInput) return;
+    const newItems = rawInput
+      .split(/\s*,\s*/) 
+      .map(item => item.trim())
+      .filter(item => item && !items.includes(item));
+
+    if (newItems.length > 0) {
+      newItems.forEach(onAddItem);
       setInputValue('');
       inputRef.current?.focus();
     }
