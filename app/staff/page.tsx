@@ -11,7 +11,7 @@ const participantes = [
   {
     nome: 'Karen',
     descricao: 'Desenvolvedora nata, hello kitty de academia e desenhista nas horas vagas.',
-    imageUrl: '/imagens/Karen.jpg'
+    imageUrl: '/imagens/karen.jpg'
   },
   {
     nome: 'Peco',
@@ -38,13 +38,13 @@ const participantes = [
 export default function App() {
   return (
     // Container principal que centraliza o conteúdo verticalmente e adiciona um fundo escuro.
-     <div className="flex items-center justify-center min-h-screen p-8 bg-gray-900 text-white font-sans bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]">
+    <div className="flex items-center justify-center min-h-screen p-8 bg-gray-900 text-white font-sans bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]">
       <div className="w-full max-w-6xl">
         {/* Título principal com gradiente de cor. */}
         <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">
           Nossos Participantes
         </h1>
-        
+
         {/* Grade de cartões de participantes. Usa um layout de grade responsivo. */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Mapeia o array de participantes para renderizar um cartão para cada pessoa. */}
@@ -59,10 +59,10 @@ export default function App() {
                 alt={`Foto de ${participante.nome}`}
                 className="w-32 h-32 rounded-full object-cover border-4 border-sky-500 mb-4"
               />
-              
+
               {/* Nome do participante. */}
               <h2 className="text-2xl font-bold text-white mb-2">{participante.nome}</h2>
-              
+
               {/* Descrição do participante. */}
               <p className="text-slate-300">{participante.descricao}</p>
             </div>
