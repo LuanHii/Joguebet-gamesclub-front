@@ -12,7 +12,8 @@ export function NavBar() {
           <Link href="/" className="transition-colors hover:text-foreground/80 text-foreground">Já Jogados</Link>
           <Link href="/adicionar" className="transition-colors hover:text-foreground/80 text-foreground">Adicionar Jogo</Link>
           <Link href="/sortear" className="transition-colors hover:text-foreground/80 text-foreground">Sortear Jogo</Link>
-        <ThemeToggle />
+          <Link href="/staff" className="transition-colors hover:text-foreground/80 text-foreground">Staff</Link>
+          <ThemeToggle />
         </nav>
       </div>
     </header>
