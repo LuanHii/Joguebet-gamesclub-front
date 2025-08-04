@@ -65,7 +65,7 @@ export default function SortearPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-[100dvh] justify-between p-4 sm:p-6 md:p-8 bg-gray-900 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))] overflow-x-hidden">
+    <div className="flex flex-col min-h-[100dvh] justify-between overflow-x-hidden">
       {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} onConfettiComplete={() => setShowConfetti(false)} />}
       
       <audio ref={leverSoundRef} src="/sounds/lever-pull.mp3" preload="auto"></audio>
@@ -73,7 +73,7 @@ export default function SortearPage() {
       <audio ref={winSoundRef} src="/sounds/jackpot-win.mp3" preload="auto"></audio>
       
       <header className="text-center my-6">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-yellow-300 drop-shadow-[0_2px_2px_rgba(0,0,0,0.7)]">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-yellow-300 drop-shadow-[0_2px_2px_rgba(0,0,0,0.7)] mt-4 mb-4">
           Casino dos Jogos
         </h1>
         <p className="text-slate-400 mt-1">Prepare sua lista e puxe a alavanca!</p>
