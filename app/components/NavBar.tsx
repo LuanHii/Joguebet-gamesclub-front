@@ -9,11 +9,11 @@ export function NavBar() {
           <span className="font-bold text-lg">Joguebet</span>
         </Link>
         <nav className="flex items-center space-x-6 text-sm font-medium">
-          <Link href="/" className="transition-colors hover:text-foreground/80 text-foreground">Já Jogados</Link>
+          <Link href="/" className="transition-colors hover:text-foreground/80 text-foreground">Já avaliados</Link>
           <Link href="/adicionar" className="transition-colors hover:text-foreground/80 text-foreground">Adicionar Jogo</Link>
           <Link href="/sortear" className="transition-colors hover:text-foreground/80 text-foreground">Sortear Jogo</Link>
           <Link href="/staff" className="transition-colors hover:text-foreground/80 text-foreground">Staff</Link>
-          <ThemeToggle />
+          <ThemeToggle/>
         </nav>
       </div>
     </header>

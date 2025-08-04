@@ -76,7 +76,7 @@ export default function HomePage() {
     <div className="container mx-auto p-4 sm:p-6 md:p-8">
       <header className="text-center my-10 md:my-16">
         <h1 className="text-4xl sm:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-slate-200 to-slate-400 py-2">
-          Galeria de Jogos
+          Jogos avaliados
         </h1>
       </header>
       

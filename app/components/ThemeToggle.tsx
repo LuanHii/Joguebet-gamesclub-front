@@ -34,7 +34,7 @@ export default function ThemeToggle() {
     }
 
     return (
-        <button onClick={toggleTheme} aria-label="Alternar tema">
+        <button onClick={toggleTheme} aria-label="Alternar tema" className="cursor-pointer">
             <img
                 src={theme === "dark" ? "/sun.svg" : "/moon.svg"}
                 alt={`Tema: ${theme}`}

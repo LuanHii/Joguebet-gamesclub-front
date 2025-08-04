@@ -74,9 +74,9 @@ export default function SortearPage() {
       
       <header className="text-center my-6">
         <h1 className="text-4xl sm:text-5xl font-extrabold text-yellow-300 drop-shadow-[0_2px_2px_rgba(0,0,0,0.7)] mt-4 mb-4">
-          Casino dos Jogos
+          Cassino dos jogos!
         </h1>
-        <p className="text-slate-400 mt-1">Prepare sua lista e puxe a alavanca!</p>
+        <p className="text-slate-400 mt-1">Prepare os itens e puxe a alavanca!</p>
       </header>
 
       <ControlPanel items={poolItems} onAddItem={handleAddItem} onRemoveItem={handleRemoveItem} />
