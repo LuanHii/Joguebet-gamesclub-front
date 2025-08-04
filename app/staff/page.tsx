@@ -38,7 +38,7 @@ const participantes = [
 export default function App() {
   return (
     // Container principal que centraliza o conteúdo verticalmente e adiciona um fundo escuro.
-    <div className="flex items-center justify-center min-h-screen p-8 bg-gray-900 text-white font-sans bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]">
+    <div className="flex justify-center min-h-screen p-8 font-sans">
       <div className="w-full max-w-6xl">
         {/* Título principal com gradiente de cor. */}
         <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">
