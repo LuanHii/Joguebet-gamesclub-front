@@ -6,6 +6,7 @@ export default function AdicionarJogoPage() {
   const [nome, setNome] = useState('');
   const [nota, setNota] = useState('');
   const [genero, setGenero] = useState('');
+  const [imagem, setImagem] = useState<File | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -13,49 +14,73 @@ export default function AdicionarJogoPage() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+
+    if (imagem === null) {
+      setError("Por favor, selecione uma imagem.");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     setSuccess(null);
 
-    const notaFinal = nota.trim() === '' ? 0 : parseFloat(nota);
-    
-    const dadosDoJogo = {
-      nome,
-      nota: notaFinal,
-      genero,
-    };
-
     try {
+      const presignedUrlResponse = await fetch(
+        'https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/presigned-url',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fileName: imagem.name,
+            fileType: imagem.type,
+          }),
+        }
+      );
+      const { uploadUrl, fileUrl } = await presignedUrlResponse.json();
+
+      await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': imagem.type },
+        body: imagem,
+      });
+
+      const notaFinal = nota.trim() === '' ? 0 : parseFloat(nota);
+      const dadosDoJogo = {
+        nome,
+        nota: notaFinal,
+        genero,
+        imageUrl: fileUrl,
+      };
+
       const response = await fetch(
         'https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/jogos',
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(dadosDoJogo),
         }
       );
 
       if (!response.ok) {
-        throw new Error('Falha ao adicionar o jogo. Verifique os dados e tente novamente.');
+        throw new Error('Falha ao adicionar o jogo.');
       }
 
       setSuccess('Jogo adicionado com sucesso!');
       setNome('');
       setNota('');
       setGenero('');
+      setImagem(null);
 
     } catch (err) {
-        if (err instanceof Error) {
-            setError(err.message);
-          } else {
-            setError('Ocorreu um erro desconhecido.');
-          }
-        } finally {
-          setIsLoading(false);
-        }
-      };
+      if (err instanceof Error) {
+          setError(err.message);
+      } else {
+          setError('Ocorreu um erro desconhecido.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
@@ -112,6 +137,24 @@ export default function AdicionarJogoPage() {
               max="10"
               className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
               placeholder="Deixe em branco para nota 0"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="imagem" className="block text-sm font-medium text-slate-300 mb-2">
+              Selecione uma imagem do seu computador
+            </label>
+            <input
+              type="file"
+              id="imagem"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  setImagem(e.target.files[0]);
+                }
+              }}
+              accept="image/png, image/jpeg, image/webp"
+              required
+              className="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-100 file:text-sky-700 hover:file:bg-sky-200"
             />
           </div>
 

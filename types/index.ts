@@ -3,4 +3,5 @@ export interface Jogo {
     nome: string;
     nota: number | string;
     genero: string;
+    imageUrl?: string;
   }
