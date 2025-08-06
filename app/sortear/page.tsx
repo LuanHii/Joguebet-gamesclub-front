@@ -73,7 +73,7 @@ export default function SortearPage() {
       <audio ref={winSoundRef} src="/sounds/jackpot-win.mp3" preload="auto"></audio>
       
       <header className="text-center my-6">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-yellow-300 drop-shadow-[0_2px_2px_rgba(0,0,0,0.7)] mt-4 mb-4">
+        <h1 className="text-4xl sm:text-5xl font-extrabold custom-text drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)] mt-4 mb-4">
           Cassino dos jogos!
         </h1>
         <p className="text-slate-400 mt-1">Prepare os itens e puxe a alavanca!</p>

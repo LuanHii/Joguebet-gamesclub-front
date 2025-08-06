@@ -74,10 +74,11 @@ export default function HomePage() {
 
   return (
     <div className="container mx-auto p-4 sm:p-6 md:p-8">
-      <header className="text-center my-10 md:my-16">
-        <h1 className="text-4xl sm:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-slate-200 to-slate-400 py-2">
+      <header className="text-center my-4 md:my-6">
+        <h1 className="text-4xl sm:text-5xl font-extrabold custom-text drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)] mt-4 mb-4">
           Jogos avaliados
         </h1>
+        <br />
       </header>
       
       {isLoading ? (

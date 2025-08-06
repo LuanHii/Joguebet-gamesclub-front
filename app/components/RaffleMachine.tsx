@@ -55,11 +55,11 @@ export function RaffleMachine({ onRaffle, isRaffling, isDisabled, displayItem, i
 
     return (
         <div className="relative w-full max-w-lg mx-auto mt-8 mb-4">
-            <div className="bg-gray-800 border-4 border-yellow-500 rounded-2xl p-8 shadow-[0_0_25px_rgba(234,179,8,0.6)]">
-                <h3 className="text-center text-xl font-bold text-yellow-300 tracking-wider mb-4">
+            <div className="bg-gray-800 border-4 custom-border rounded-2xl p-8 custom-shadow">
+                <h3 className="text-center text-xl font-bold custom-text tracking-wider mb-4">
                     {isWinner ? 'GRANDE VENCEDOR!' : 'Aguardando Sorteio'}
                 </h3>
-                <div className="relative w-full h-36 flex items-center justify-center overflow-hidden bg-black/50 rounded-lg border-2 border-yellow-600/50 shadow-inner">
+                <div className="relative w-full h-36 flex items-center justify-center overflow-hidden bg-black/50 rounded-lg border-2 custom-border shadow-inner">
                     <AnimatePresence>
                         {!isWinner && displayItem && (
                             <motion.div
@@ -79,7 +79,7 @@ export function RaffleMachine({ onRaffle, isRaffling, isDisabled, displayItem, i
                                 variants={winnerVariants}
                                 initial="hidden"
                                 animate="visible"
-                                className="text-4xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-orange-400 text-center"
+                                className="text-4xl md:text-5xl font-extrabold bg-clip-text custom-text text-center"
                             >
                                 {displayItem}
                             </motion.div>
