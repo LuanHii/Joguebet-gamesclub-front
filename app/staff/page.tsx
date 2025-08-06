@@ -41,9 +41,10 @@ export default function App() {
     <div className="flex justify-center min-h-screen p-8 font-sans">
       <div className="w-full max-w-6xl">
         {/* Título principal com gradiente de cor. */}
-        <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">
+        <h1 className="text-4xl sm:text-5xl font-extrabold custom-text drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)] mt-3 mb-4 text-center">
           Nossos Participantes
         </h1>
+        <br />
 
         {/* Grade de cartões de participantes. Usa um layout de grade responsivo. */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -57,7 +58,7 @@ export default function App() {
               <img
                 src={participante.imageUrl}
                 alt={`Foto de ${participante.nome}`}
-                className="w-32 h-32 rounded-full object-cover border-4 border-sky-500 mb-4"
+                className="w-32 h-32 rounded-full object-cover border-4 custom-border mb-4"
               />
 
               {/* Nome do participante. */}
