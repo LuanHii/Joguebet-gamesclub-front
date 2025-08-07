@@ -38,6 +38,19 @@ html.dark {
   box-shadow: var(--custom-shadow-style);
 }
 
+@keyframes text-glow {
+  0%, 100% {
+    text-shadow: 0 0 5px #facc15, 0 0 10px #facc15, 0 0 15px #fde047;
+  }
+  50% {
+    text-shadow: 0 0 10px #fde047, 0 0 20px #fde047, 0 0 30px #fef08a;
+  }
+}
+
+.text-glow-gold {
+  animation: text-glow 3s ease-in-out infinite;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
