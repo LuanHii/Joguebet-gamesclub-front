@@ -17,6 +17,9 @@ export function NavBar() {
           </Link>
           <Link href="/staff" className="transition-colors hover:text-foreground/80 text-foreground">Staff
           </Link>
+          <a href="https://drive.google.com/drive/folders/1cVjNYSErLQYRW8Kco2_Dj7vQw4tEHWSS?hl=pt-br">
+          <img src="imagens/icone.png" className= "flex h-6 w-6 md:h-8 md:w-8"/>
+          </a>
           <ThemeToggle />
         </nav>
       </div>
