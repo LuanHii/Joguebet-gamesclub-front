@@ -15,34 +15,36 @@ export default function AdicionarJogoPage() {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
-    if (imagem === null) {
-      setError("Por favor, selecione uma imagem.");
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
     setSuccess(null);
 
     try {
-      const presignedUrlResponse = await fetch(
-        'https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/presigned-url',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fileName: imagem.name,
-            fileType: imagem.type,
-          }),
-        }
-      );
-      const { uploadUrl, fileUrl } = await presignedUrlResponse.json();
+      let fileUrl = '';
 
-      await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': imagem.type },
-        body: imagem,
-      });
+      // O bloco de upload só será executado se uma imagem tiver sido selecionada
+      if (imagem) {
+        const presignedUrlResponse = await fetch(
+          'https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/presigned-url',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fileName: imagem.name,
+              fileType: imagem.type,
+            }),
+          }
+        );
+        const { uploadUrl, fileUrl: newFileUrl } = await presignedUrlResponse.json();
+
+        await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': imagem.type },
+          body: imagem,
+        });
+
+        fileUrl = newFileUrl;
+      }
 
       const notaFinal = nota.trim() === '' ? 0 : parseFloat(nota);
       const dadosDoJogo = {
@@ -150,10 +152,12 @@ export default function AdicionarJogoPage() {
               onChange={(e) => {
                 if (e.target.files && e.target.files[0]) {
                   setImagem(e.target.files[0]);
+                } 
+                else {
+                  setImagem(null);
                 }
               }}
               accept="image/png, image/jpeg, image/webp"
-              required
               className="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-100 file:text-sky-700 hover:file:bg-sky-200"
             />
           </div>
