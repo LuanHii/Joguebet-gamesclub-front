@@ -11,7 +11,7 @@ interface ControlPanelProps {
 
 export function ControlPanel({ items, onAddItem, onRemoveItem }: ControlPanelProps) {
   const [inputValue, setInputValue] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -34,14 +34,14 @@ export function ControlPanel({ items, onAddItem, onRemoveItem }: ControlPanelPro
       <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-2xl p-6">
         <h2 className="text-2xl font-bold text-white mb-4">1. Adicionar Itens</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <textarea
-            ref={inputRef as any}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Ex: Jogo A, Jogo B, Jogo C"
-            rows={4}
-            className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-          />
+        <textarea
+          ref={inputRef}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="Ex: Jogo A, Jogo B, Jogo C"
+          rows={4}
+          className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+        />
           <p className="text-xs text-slate-400 -mt-2">Você pode adicionar vários itens separados por vírgula ou quebra de linha.</p>
           <button type="submit" className="w-full bg-slate-700 text-white font-bold py-2 rounded-lg hover:bg-slate-600 transition-colors">
             Adicionar à Lista
