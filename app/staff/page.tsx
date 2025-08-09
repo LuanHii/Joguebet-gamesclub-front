@@ -5,32 +5,32 @@ import React from 'react';
 const participantes = [
   {
     nome: 'Luan',
-    descricao: 'Desenvolvedor Fullstack, apaixonado em programar e viciado em videogames.',
+    descricao: 'Maior admirador do Davi Britto, um dos pais fundadores da joguebet.',
     imageUrl: '/imagens/Luan.jpg'
   },
   {
     nome: 'Karen',
-    descricao: 'Desenvolvedora nata, hello kitty de academia e desenhista nas horas vagas.',
+    descricao: '"Linda, perfeita, maravilhosa" - Luan ... Palavras dele, mas e as do resto do grupo??',
     imageUrl: '/imagens/karen.jpg'
   },
   {
     nome: 'Peco',
-    descricao: 'Designer, desenvolvedor e apreciador de álcool.',
+    descricao: 'Dono dos melhores rages contra o Luan, eventualmente vou pensar em algo melhor pra por aqui.',
     imageUrl: '/imagens/Peco.jpg'
   },
   {
     nome: 'Leonardo',
-    descricao: 'Desenvolvedor C#, amante do caos e da confusão.',
+    descricao: 'Criador das melhores personalidades para todos os jogos, um dos gays fundadores da joguebet.',
     imageUrl: '/imagens/Leonardo.jpeg'
   },
   {
     nome: 'Duda',
-    descricao: 'Desenvolvedora astuta e Gerente das jogartinas noturnas.',
+    descricao: 'Maior entusiasta das partidas noturnas (quando esta presente).',
     imageUrl: '/imagens/duda.jpg'
   },
   {
     nome: 'Piter',
-    descricao: 'Desenvolvedor, designer e apenas um cara tranquilo.',
+    descricao: 'Apenas um cara tranquilo, com uma vida tranquila e pensamentos tranquilos.',
     imageUrl: '/imagens/Piter.jpg'
   }
 ];
