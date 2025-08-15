@@ -7,11 +7,14 @@ interface ControlPanelProps {
   items: string[];
   onAddItem: (item: string) => void;
   onRemoveItem: (index: number) => void;
+  onAddCategory: (category: string) => void;
+  categories: string[];
 }
 
-export function ControlPanel({ items, onAddItem, onRemoveItem }: ControlPanelProps) {
+export function ControlPanel({ items, onAddItem, onRemoveItem, onAddCategory, categories }: ControlPanelProps) {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [showCategories, setShowCategories] = useState(false);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -30,23 +33,54 @@ export function ControlPanel({ items, onAddItem, onRemoveItem }: ControlPanelPro
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
+    <div className="w-full max-w-4xl mx-auto grid grid-cols-2 gap-8 my-8">
       <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-2xl p-6">
         <h2 className="text-2xl font-bold text-white mb-4">1. Adicionar Itens</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-        <textarea
-          ref={inputRef}
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Ex: Jogo A, Jogo B, Jogo C"
-          rows={4}
-          className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-        />
+          <textarea
+            ref={inputRef}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Ex: Jogo A, Jogo B, Jogo C"
+            rows={4}
+            className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          />
           <p className="text-xs text-slate-400 -mt-2">Você pode adicionar vários itens separados por vírgula ou quebra de linha.</p>
           <button type="submit" className="w-full bg-slate-700 text-white font-bold py-2 rounded-lg hover:bg-slate-600 transition-colors">
             Adicionar à Lista
           </button>
         </form>
+        <div className="mt-4">
+          <button
+            onClick={() => setShowCategories(!showCategories)}
+            className="w-full flex items-center justify-center gap-2 bg-slate-700 text-white font-bold py-2 rounded-lg hover:bg-slate-600 transition-colors"
+          >
+            Gênero
+            {showCategories ? <span>&#9650;</span> : <span>&#9660;</span>}
+          </button>
+          
+          <AnimatePresence>
+            {showCategories && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden mt-2 space-y-2"
+              >
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => onAddCategory(category)}
+                    className="w-full text-left px-4 py-2 bg-slate-800 rounded-md hover:bg-slate-700 transition-colors text-slate-200 capitalize"
+                  >
+                    {category.replace('_', ' ')}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-2xl p-6 flex flex-col">

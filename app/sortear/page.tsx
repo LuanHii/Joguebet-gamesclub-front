@@ -6,8 +6,24 @@ import { RaffleMachine } from '../components/RaffleMachine';
 import Confetti from 'react-confetti';
 import { motion, useAnimation } from 'framer-motion';
 
+const gameCategories = {
+    fps: ["Jogos ainda não sorteados"],
+    rpg: ["Jogos ainda não sorteados"],
+    plataforma: ["Spiritfarer", "Gravity Circuit", "BZZT, Planet of Lana", "ITORAH", "ElecHead", "Toree3D", "Kirby", "BADLAND", "Convergence"],
+    humor: ["Jogos ainda não sorteados"],
+    simulador: ["Jogos ainda não sorteados"],
+    futurista: ["Jogos ainda não sorteados"],
+    casual: ["Jogos ainda não sorteados"],
+    visual_novel: ["Winter Novel", "STEINS;GATE", "VA-11 Hall-A: Cyberpunk Bartender Action", "Danganronpa: Trigger Happy Havoc", "Trouble Comes Twice", "Please Be Happy", "Coffee Talks", "Room of depression", "Needy girl overdose", "Teatro dos finais infelizes", "one night", "hot springs"],
+    ninja: ["Jogos ainda não sorteados"],
+    terror: ["Jogos ainda não sorteados"],
+    pixel_art: ["Jogos ainda não sorteados"],
+    roguelike: ["Darkest Dungeon", "Desktop Survivors 98", "Rogue Legacy 2", "Death or Treat", "Sundered®: Eldritch Edition", "Magic Typo", "City Of Beats", "The Spell Brigade", "Have a Nice Death"],
+    aventura: ["Jogos ainda não sorteados"]
+};
+
 export default function SortearPage() {
-  const [poolItems, setPoolItems] = useState<string[]>(['God of War', 'Elden Ring', 'Baldur\'s Gate 3']);
+  const [poolItems, setPoolItems] = useState<string[]>([]);
   const [isRaffling, setIsRaffling] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
   const [rafflingItem, setRafflingItem] = useState<string | null>(null);
@@ -30,12 +46,20 @@ export default function SortearPage() {
   }, []);
 
   const handleAddItem = (item: string) => {
+  const newItems = item.split(/[, \n]+/).map(i => i.trim()).filter(i => i);  
     setPoolItems(prev => [...prev, item]);
   };
 
   const handleRemoveItem = (indexToRemove: number) => {
     setPoolItems(prev => prev.filter((_, index) => index !== indexToRemove));
   };
+
+  const handleAddCategory = (category: string) => {
+    const itemsToAdd = gameCategories[category as keyof typeof gameCategories];
+    if (itemsToAdd) {
+      setPoolItems(prev => [...prev, ...itemsToAdd]);
+    }
+  };
 
   const handleRaffle = () => {
     if (poolItems.length < 2 || isRaffling) return;
@@ -86,7 +110,7 @@ export default function SortearPage() {
       </header>
 
       <main className="flex-grow flex flex-col justify-center py-4">
-        <ControlPanel items={poolItems} onAddItem={handleAddItem} onRemoveItem={handleRemoveItem} />
+        <ControlPanel items={poolItems} onAddItem={handleAddItem} onRemoveItem={handleRemoveItem} onAddCategory={handleAddCategory} categories={Object.keys(gameCategories)}/>
       </main>
       
       <footer className="flex-shrink-0">
