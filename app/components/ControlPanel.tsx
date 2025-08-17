@@ -3,15 +3,18 @@
 import { useState, FormEvent, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// 1. Adicionamos a nova propriedade 'onClearItems' à interface
 interface ControlPanelProps {
   items: string[];
   onAddItem: (item: string) => void;
   onRemoveItem: (index: number) => void;
+  onClearItems: () => void; // Nova função para limpar a lista
   onAddCategory: (category: string) => void;
   categories: string[];
 }
 
-export function ControlPanel({ items, onAddItem, onRemoveItem, onAddCategory, categories }: ControlPanelProps) {
+// 2. Recebemos a nova função como prop
+export function ControlPanel({ items, onAddItem, onRemoveItem, onClearItems, onAddCategory, categories }: ControlPanelProps) {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [showCategories, setShowCategories] = useState(false);
@@ -33,7 +36,7 @@ export function ControlPanel({ items, onAddItem, onRemoveItem, onAddCategory, ca
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto grid grid-cols-2 gap-8 my-8">
+    <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
       <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-2xl p-6">
         <h2 className="text-2xl font-bold text-white mb-4">1. Adicionar Itens</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -58,7 +61,6 @@ export function ControlPanel({ items, onAddItem, onRemoveItem, onAddCategory, ca
             Gênero
             {showCategories ? <span>&#9650;</span> : <span>&#9660;</span>}
           </button>
-          
           <AnimatePresence>
             {showCategories && (
               <motion.div
@@ -66,7 +68,8 @@ export function ControlPanel({ items, onAddItem, onRemoveItem, onAddCategory, ca
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
-                className="overflow-hidden mt-2 space-y-2"
+
+                className="overflow-y-auto max-h-60 pr-2 mt-2 space-y-2"
               >
                 {categories.map((category) => (
                   <button
@@ -84,8 +87,25 @@ export function ControlPanel({ items, onAddItem, onRemoveItem, onAddCategory, ca
       </div>
 
       <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-2xl p-6 flex flex-col">
-        <h2 className="text-2xl font-bold text-white mb-4">2. Lista do Sorteio ({items.length})</h2>
-        <div className="flex-grow overflow-y-auto max-h-[250px] pr-2">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-white">2. Lista ({items.length})</h2>
+          <AnimatePresence>
+            {items.length > 0 && (
+              <motion.button
+                onClick={onClearItems}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm bg-red-800/50 text-red-200 px-3 py-1 rounded-md hover:bg-red-800/80 transition-colors"
+              >
+                Limpar Lista
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="flex-grow overflow-y-auto max-h-[300px] pr-2">
           {items.length === 0 ? (
             <div className="text-center text-slate-400 h-full flex items-center justify-center">
               <p>Adicione jogos para começar!</p>
