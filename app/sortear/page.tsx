@@ -7,6 +7,7 @@ import Confetti from 'react-confetti';
 import { motion, useAnimation } from 'framer-motion';
 
 const gameCategories = {
+    todos: ["fps", "plataforma", "humor", "simulador", "futurista", "casual", "visual novel", "action rpg", "ninja", "terror", "pixel art", "roguelike", "aventura"],
     fps: ["Jogos ainda não sorteados"],
     rpg: ["Jogos ainda não sorteados"],
     plataforma: ["Spiritfarer", "Gravity Circuit", "BZZT, Planet of Lana", "ITORAH", "ElecHead", "Toree3D", "Kirby", "BADLAND", "Convergence"],
@@ -53,6 +54,10 @@ export default function SortearPage() {
   const handleRemoveItem = (indexToRemove: number) => {
     setPoolItems(prev => prev.filter((_, index) => index !== indexToRemove));
   };
+
+  const handleClearItems = () => {
+    setPoolItems([]);
+  }
 
   const handleAddCategory = (category: string) => {
     const itemsToAdd = gameCategories[category as keyof typeof gameCategories];
@@ -110,7 +115,7 @@ export default function SortearPage() {
       </header>
 
       <main className="flex-grow flex flex-col justify-center py-4">
-        <ControlPanel items={poolItems} onAddItem={handleAddItem} onRemoveItem={handleRemoveItem} onAddCategory={handleAddCategory} categories={Object.keys(gameCategories)}/>
+        <ControlPanel items={poolItems} onAddItem={handleAddItem} onRemoveItem={handleRemoveItem} onClearItems={handleClearItems} onAddCategory={handleAddCategory} categories={Object.keys(gameCategories)}/>
       </main>
       
       <footer className="flex-shrink-0">
