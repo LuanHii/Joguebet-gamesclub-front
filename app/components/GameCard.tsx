@@ -10,6 +10,24 @@ interface GameCardProps {
   onDeleteClick: () => void;
 }
 
+export const AWARD_ICONS: Record<string, string> = {
+  "Jogo do ano": "🏆",
+  "Melhor Narrativa": "📖",
+  "Melhor Surpresa": "🎁",
+  "Jogo Emoção": "😭",
+  "Melhor Protagonista": "🦸",
+  "Melhor Arte": "🎨",
+  "Melhor Trilha sonora": "🎵",
+  "Melhor Capa": "🖼️",
+  "Pior Capa": "💩",
+  "Melhor Pesca": "🎣",
+};
+
+export const getIconForPremio = (premioString: string) => {
+  const category = premioString.replace(/\s\d{4}$/, '');
+  return AWARD_ICONS[category] || "🏅";
+};
+
 const getNotaColorClasses = (nota: number) => {
   if (nota >= 8) return { base: 'text-green-400', glow: 'shadow-green-500/50' };
   if (nota >= 6) return { base: 'text-yellow-400', glow: 'shadow-yellow-500/50' };
@@ -101,7 +119,30 @@ export function GameCard({ jogo, onEditClick, onDeleteClick }: GameCardProps) {
       )}
 
       <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-        <motion.div variants={{ hidden: { opacity: 0 }, hover: { opacity: 1 } }} className="absolute top-4 right-4 flex gap-2">
+        {jogo.premios && jogo.premios.length > 0 && (
+          <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+            {jogo.premios.map((premio) => (
+              <div key={premio} className="group/medal relative">
+                <div className="flex items-center justify-center w-8 h-8 bg-black/40 backdrop-blur-md border border-amber-500/30 rounded-full shadow-[0_0_10px_rgba(251,191,36,0.3)] text-lg cursor-help transition-transform hover:scale-110">
+                  {getIconForPremio(premio)}
+                </div>
+                <div className="absolute left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/medal:opacity-100 transition-opacity duration-200 pointer-events-none bg-black/90 text-amber-400 text-xs font-bold px-3 py-1.5 rounded-md whitespace-nowrap z-20 border border-amber-500/20 shadow-xl backdrop-blur-sm">
+                  {premio}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <motion.div variants={{ hidden: { opacity: 0 }, hover: { opacity: 1 } }} className="absolute top-4 right-4 flex gap-2 z-10">
+            <button
+              onClick={(e) => handleActionClick(e, onEditClick)}
+              aria-label="Dar Prêmio"
+              title="Dar Prêmio"
+              className="p-2 rounded-full bg-black/30 backdrop-blur-sm text-amber-400 hover:text-amber-300 transition-colors shadow-[0_0_10px_rgba(251,191,36,0.15)] hover:shadow-[0_0_15px_rgba(251,191,36,0.4)]"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+            </button>
             <button
               onClick={(e) => handleActionClick(e, onEditClick)}
               aria-label="Editar jogo"

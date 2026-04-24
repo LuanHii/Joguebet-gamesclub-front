@@ -4,4 +4,5 @@ export interface Jogo {
     nota: number | string;
     genero: string;
     imageUrl?: string;
+    premios?: string[];
   }

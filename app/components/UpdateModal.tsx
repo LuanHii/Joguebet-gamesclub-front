@@ -2,14 +2,8 @@
 import { useState, useEffect, FormEvent, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import Image from 'next/image';
-
-interface Jogo {
-  id: string;
-  nome: string;
-  nota: number | string;
-  genero: string;
-  imageUrl?: string;
-}
+import { Jogo } from '@/types';
+import { AWARD_ICONS } from './GameCard';
 
 interface UpdateModalProps {
   isOpen: boolean;
@@ -24,6 +18,8 @@ export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProp
   const [genero, setGenero] = useState('');
   const [imagem, setImagem] = useState<File | null>(null);
   const [imagemPreview, setImagemPreview] = useState<string | null>(null);
+  const [premiosSelecionados, setPremiosSelecionados] = useState<string[]>([]);
+  const [anoPremio, setAnoPremio] = useState<number>(new Date().getFullYear());
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +30,14 @@ export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProp
       setNota(String(jogo.nota));
       setGenero(jogo.genero);
       setImagemPreview(jogo.imageUrl || null);
+      
+      const initialPremios = jogo.premios || [];
+      const categories = initialPremios.map(p => p.replace(/\s\d{4}$/, ''));
+      const anoMatch = initialPremios.length > 0 ? initialPremios[0].match(/\d{4}$/) : null;
+      
+      setPremiosSelecionados(categories);
+      setAnoPremio(anoMatch ? parseInt(anoMatch[0]) : new Date().getFullYear());
+      
       setError(null);
       setImagem(null);
     }
@@ -81,6 +85,7 @@ export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProp
         nota: parseFloat(nota),
         genero,
         imageUrl: finalImageUrl,
+        premios: premiosSelecionados.map(p => `${p} ${anoPremio}`),
       };
 
       const response = await fetch(
@@ -131,6 +136,43 @@ export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProp
                   <div>
                     <label htmlFor="edit-nota" className="text-sm text-slate-400">Nota</label>
                     <input id="edit-nota" type="number" value={nota} onChange={(e) => setNota(e.target.value)} required step="0.1" className="w-full bg-slate-900 border border-slate-700 rounded-md p-2 mt-1 text-white" />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mt-1 mb-2">
+                      <label className="text-sm text-slate-400">Prêmios / Troféus</label>
+                      <div className="flex items-center gap-2">
+                        <label htmlFor="edit-anoPremio" className="text-xs text-slate-400">Ano:</label>
+                        <input 
+                          type="number" 
+                          id="edit-anoPremio"
+                          value={anoPremio} 
+                          onChange={(e) => setAnoPremio(parseInt(e.target.value) || new Date().getFullYear())}
+                          className="w-20 bg-slate-900 border border-slate-700 rounded-md px-2 py-1 text-white text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 bg-slate-900 p-3 border border-slate-700 rounded-md">
+                      {Object.entries(AWARD_ICONS).map(([premio, icone]) => (
+                        <label key={premio} className="flex items-center space-x-2 cursor-pointer text-slate-300 hover:text-amber-400 transition-colors">
+                          <input
+                            type="checkbox"
+                            className="form-checkbox h-3.5 w-3.5 text-amber-500 rounded border-slate-600 bg-slate-800 focus:ring-amber-500 focus:ring-offset-slate-900"
+                            checked={premiosSelecionados.includes(premio)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setPremiosSelecionados(prev => [...prev, premio]);
+                              } else {
+                                setPremiosSelecionados(prev => prev.filter(p => p !== premio));
+                              }
+                            }}
+                          />
+                          <span className="text-sm select-none">
+                            {icone} {premio}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
 
                   <div>
