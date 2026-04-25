@@ -4,22 +4,22 @@ import { useState, useEffect } from 'react';
 import { GameCard } from './components/GameCard';
 import { SkeletonCard } from './components/SkeletonCard';
 import { UpdateModal } from './components/UpdateModal';
+import { NotasModal } from './components/NotasModal';
 import { Jogo } from '@/types';
 
 export default function HomePage() {
   const [jogos, setJogos] = useState<Jogo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNotasModalOpen, setIsNotasModalOpen] = useState(false);
   const [selectedGame, setSelectedGame] = useState<Jogo | null>(null);
+  const [notasGame, setNotasGame] = useState<Jogo | null>(null);
 
   const fetchJogos = async () => {
     setIsLoading(true);
     try {
       const res = await fetch('https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/jogos'); 
       const data = await res.json();
-      
-      console.log("DADO RECEBIDO:", data);
-      console.log("TIPO DO DADO:", typeof data); 
   
       const jogosArray = typeof data === 'string' ? JSON.parse(data) : data;
   
@@ -40,6 +40,11 @@ export default function HomePage() {
   const handleEditClick = (jogo: Jogo) => {
     setSelectedGame(jogo);
     setIsModalOpen(true);
+  };
+
+  const handleViewNotas = (jogo: Jogo) => {
+    setNotasGame(jogo);
+    setIsNotasModalOpen(true);
   };
 
   const handleDeleteGame = async (gameId: string) => {
@@ -68,6 +73,11 @@ export default function HomePage() {
     setSelectedGame(null);
   };
 
+  const closeNotasModal = () => {
+    setIsNotasModalOpen(false);
+    setNotasGame(null);
+  };
+
   const handleUpdateSuccess = () => {
     fetchJogos(); 
   };
@@ -88,7 +98,13 @@ export default function HomePage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {jogos.map((jogo) => (
-            <GameCard key={jogo.id} jogo={jogo} onEditClick={() => handleEditClick(jogo)} onDeleteClick={() => handleDeleteGame(jogo.id)} />
+            <GameCard
+              key={jogo.id}
+              jogo={jogo}
+              onEditClick={() => handleEditClick(jogo)}
+              onDeleteClick={() => handleDeleteGame(jogo.id)}
+              onViewNotas={() => handleViewNotas(jogo)}
+            />
           ))}
         </div>
       )}
@@ -98,6 +114,12 @@ export default function HomePage() {
         onClose={closeModal}
         jogo={selectedGame}
         onUpdate={handleUpdateSuccess}
+      />
+
+      <NotasModal
+        isOpen={isNotasModalOpen}
+        onClose={closeNotasModal}
+        jogo={notasGame}
       />
     </div>
   );

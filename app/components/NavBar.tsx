@@ -37,7 +37,7 @@ export function NavBar() {
               Sortear Jogo
             </Link>
             <Link href="/staff" className="transition-colors hover:text-foreground/80" onClick={handleLinkClick}>
-              Staff
+              Membros / Staff
             </Link>
           </nav>
           <div className="flex items-center gap-4">

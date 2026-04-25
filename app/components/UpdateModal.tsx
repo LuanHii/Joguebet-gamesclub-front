@@ -2,8 +2,9 @@
 import { useState, useEffect, FormEvent, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import Image from 'next/image';
-import { Jogo } from '@/types';
+import { Jogo, NotaIndividual } from '@/types';
 import { AWARD_ICONS } from './GameCard';
+import { Membro } from '@/types';
 
 interface UpdateModalProps {
   isOpen: boolean;
@@ -11,6 +12,14 @@ interface UpdateModalProps {
   jogo: Jogo | null;
   onUpdate: () => void;
 }
+
+const calcularMediaLocal = (notas: Record<string, NotaIndividual>): number => {
+  const valores = Object.values(notas)
+    .map(n => n.valor)
+    .filter(v => !isNaN(v) && v > 0);
+  if (valores.length === 0) return 0;
+  return parseFloat((valores.reduce((a, b) => a + b, 0) / valores.length).toFixed(2));
+};
 
 export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProps) {
   const [nome, setNome] = useState('');
@@ -20,9 +29,22 @@ export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProp
   const [imagemPreview, setImagemPreview] = useState<string | null>(null);
   const [premiosSelecionados, setPremiosSelecionados] = useState<string[]>([]);
   const [anoPremio, setAnoPremio] = useState<number>(new Date().getFullYear());
+  const [dataSorteio, setDataSorteio] = useState('');
+  const [notasIndividuais, setNotasIndividuais] = useState<Record<string, NotaIndividual>>({});
+  const [membrosDisponiveis, setMembrosDisponiveis] = useState<string[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/membros')
+      .then(res => res.json())
+      .then(data => {
+        const parsedData: Membro[] = typeof data === 'string' ? JSON.parse(data) : data;
+        setMembrosDisponiveis(parsedData.map(m => m.nome));
+      })
+      .catch(err => console.error("Erro ao buscar membros:", err));
+  }, []);
 
   useEffect(() => {
     if (jogo) {
@@ -30,6 +52,7 @@ export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProp
       setNota(String(jogo.nota));
       setGenero(jogo.genero);
       setImagemPreview(jogo.imageUrl || null);
+      setDataSorteio(jogo.dataSorteio || '');
       
       const initialPremios = jogo.premios || [];
       const categories = initialPremios.map(p => p.replace(/\s\d{4}$/, ''));
@@ -38,10 +61,39 @@ export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProp
       setPremiosSelecionados(categories);
       setAnoPremio(anoMatch ? parseInt(anoMatch[0]) : new Date().getFullYear());
       
+      if (jogo.notasIndividuais) {
+        setNotasIndividuais({ ...jogo.notasIndividuais });
+      } else {
+        setNotasIndividuais({});
+      }
+
       setError(null);
       setImagem(null);
     }
   }, [jogo]);
+
+  const handleNotaChange = (membro: string, valor: string) => {
+    const numVal = parseFloat(valor);
+    setNotasIndividuais(prev => {
+      const updated = { ...prev };
+      if (valor === '' || isNaN(numVal)) {
+        delete updated[membro];
+      } else {
+        updated[membro] = { valor: numVal, comentario: prev[membro]?.comentario || '' };
+      }
+      return updated;
+    });
+  };
+
+  const handleComentarioChange = (membro: string, comentario: string) => {
+    setNotasIndividuais(prev => {
+      if (!prev[membro]) return prev;
+      return { ...prev, [membro]: { ...prev[membro], comentario } };
+    });
+  };
+
+  const temNotasIndividuais = Object.keys(notasIndividuais).length > 0;
+  const mediaPreview = temNotasIndividuais ? calcularMediaLocal(notasIndividuais) : parseFloat(nota) || 0;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -80,12 +132,14 @@ export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProp
         finalImageUrl = fileUrl;
       }
 
-      const dadosParaAtualizar = {
+      const dadosParaAtualizar: Record<string, unknown> = {
         nome,
-        nota: parseFloat(nota),
+        nota: temNotasIndividuais ? mediaPreview : parseFloat(nota),
         genero,
         imageUrl: finalImageUrl,
         premios: premiosSelecionados.map(p => `${p} ${anoPremio}`),
+        notasIndividuais: temNotasIndividuais ? notasIndividuais : null,
+        dataSorteio: dataSorteio || null,
       };
 
       const response = await fetch(
@@ -120,7 +174,7 @@ export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProp
         <div className="fixed inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-slate-800 p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-slate-800 p-6 text-left align-middle shadow-xl transition-all max-h-[90vh] overflow-y-auto">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-white">
                   Editar Jogo: {jogo?.nome}
                 </Dialog.Title>
@@ -133,9 +187,69 @@ export function UpdateModal({ isOpen, onClose, jogo, onUpdate }: UpdateModalProp
                     <label htmlFor="edit-genero" className="text-sm text-slate-400">Gênero</label>
                     <input id="edit-genero" type="text" value={genero} onChange={(e) => setGenero(e.target.value)} required className="w-full bg-slate-900 border border-slate-700 rounded-md p-2 mt-1 text-white" />
                   </div>
+
                   <div>
-                    <label htmlFor="edit-nota" className="text-sm text-slate-400">Nota</label>
-                    <input id="edit-nota" type="number" value={nota} onChange={(e) => setNota(e.target.value)} required step="0.1" className="w-full bg-slate-900 border border-slate-700 rounded-md p-2 mt-1 text-white" />
+                    <label htmlFor="edit-dataSorteio" className="text-sm text-slate-400">Data do Sorteio</label>
+                    <input
+                      id="edit-dataSorteio"
+                      type="date"
+                      value={dataSorteio}
+                      onChange={(e) => setDataSorteio(e.target.value)}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-md p-2 mt-1 text-white [color-scheme:dark]"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm text-slate-400">Notas Individuais</label>
+                      {temNotasIndividuais && (
+                        <span className="text-xs text-sky-400 font-semibold">
+                          Média: {mediaPreview.toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+                    <div className="space-y-2 bg-slate-900 p-3 border border-slate-700 rounded-md">
+                      {membrosDisponiveis.map(membro => (
+                        <div key={membro} className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-slate-300 w-14 flex-shrink-0">{membro}</span>
+                            <input
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              max="10"
+                              placeholder="—"
+                              value={notasIndividuais[membro]?.valor ?? ''}
+                              onChange={(e) => handleNotaChange(membro, e.target.value)}
+                              className="w-20 bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Comentário..."
+                              value={notasIndividuais[membro]?.comentario ?? ''}
+                              onChange={(e) => handleComentarioChange(membro, e.target.value)}
+                              className="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-xs focus:outline-none focus:ring-1 focus:ring-sky-500 placeholder-slate-500"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="edit-nota" className="text-sm text-slate-400">
+                      Nota {temNotasIndividuais ? '(calculada automaticamente)' : '(manual)'}
+                    </label>
+                    <input
+                      id="edit-nota"
+                      type="number"
+                      value={temNotasIndividuais ? mediaPreview.toFixed(2) : nota}
+                      onChange={(e) => setNota(e.target.value)}
+                      required
+                      step="0.01"
+                      readOnly={temNotasIndividuais}
+                      className={`w-full bg-slate-900 border border-slate-700 rounded-md p-2 mt-1 text-white ${temNotasIndividuais ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    />
                   </div>
 
                   <div>

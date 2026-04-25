@@ -1,7 +1,16 @@
 "use client";
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { AWARD_ICONS } from '../components/GameCard';
+import { NotaIndividual, Membro } from '@/types';
+
+const calcularMediaLocal = (notas: Record<string, NotaIndividual>): number => {
+  const valores = Object.values(notas)
+    .map(n => n.valor)
+    .filter(v => !isNaN(v) && v > 0);
+  if (valores.length === 0) return 0;
+  return parseFloat((valores.reduce((a, b) => a + b, 0) / valores.length).toFixed(2));
+};
 
 export default function AdicionarJogoPage() {
   const [nome, setNome] = useState('');
@@ -10,10 +19,46 @@ export default function AdicionarJogoPage() {
   const [imagem, setImagem] = useState<File | null>(null);
   const [premiosSelecionados, setPremiosSelecionados] = useState<string[]>([]);
   const [anoPremio, setAnoPremio] = useState<number>(new Date().getFullYear());
+  const [dataSorteio, setDataSorteio] = useState('');
+  const [notasIndividuais, setNotasIndividuais] = useState<Record<string, NotaIndividual>>({});
+  const [membrosDisponiveis, setMembrosDisponiveis] = useState<string[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/membros')
+      .then(res => res.json())
+      .then(data => {
+        const parsedData: Membro[] = typeof data === 'string' ? JSON.parse(data) : data;
+        setMembrosDisponiveis(parsedData.map(m => m.nome));
+      })
+      .catch(err => console.error("Erro ao buscar membros:", err));
+  }, []);
+
+  const handleNotaChange = (membro: string, valor: string) => {
+    const numVal = parseFloat(valor);
+    setNotasIndividuais(prev => {
+      const updated = { ...prev };
+      if (valor === '' || isNaN(numVal)) {
+        delete updated[membro];
+      } else {
+        updated[membro] = { valor: numVal, comentario: prev[membro]?.comentario || '' };
+      }
+      return updated;
+    });
+  };
+
+  const handleComentarioChange = (membro: string, comentario: string) => {
+    setNotasIndividuais(prev => {
+      if (!prev[membro]) return prev;
+      return { ...prev, [membro]: { ...prev[membro], comentario } };
+    });
+  };
+
+  const temNotasIndividuais = Object.keys(notasIndividuais).length > 0;
+  const mediaPreview = temNotasIndividuais ? calcularMediaLocal(notasIndividuais) : parseFloat(nota) || 0;
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -25,7 +70,6 @@ export default function AdicionarJogoPage() {
     try {
       let fileUrl = '';
 
-      // O bloco de upload só será executado se uma imagem tiver sido selecionada
       if (imagem) {
         const presignedUrlResponse = await fetch(
           'https://6u1nmldbfg.execute-api.us-east-2.amazonaws.com/dev/presigned-url',
@@ -49,13 +93,15 @@ export default function AdicionarJogoPage() {
         fileUrl = newFileUrl;
       }
 
-      const notaFinal = nota.trim() === '' ? 0 : parseFloat(nota);
-      const dadosDoJogo = {
+      const notaFinal = temNotasIndividuais ? mediaPreview : (nota.trim() === '' ? 0 : parseFloat(nota));
+      const dadosDoJogo: Record<string, unknown> = {
         nome,
         nota: notaFinal,
         genero,
         imageUrl: fileUrl,
         premios: premiosSelecionados.map(p => `${p} ${anoPremio}`),
+        notasIndividuais: temNotasIndividuais ? notasIndividuais : null,
+        dataSorteio: dataSorteio || null,
       };
 
       const response = await fetch(
@@ -77,6 +123,8 @@ export default function AdicionarJogoPage() {
       setGenero('');
       setImagem(null);
       setPremiosSelecionados([]);
+      setDataSorteio('');
+      setNotasIndividuais({});
 
     } catch (err) {
       if (err instanceof Error) {
@@ -94,7 +142,7 @@ export default function AdicionarJogoPage() {
       <div className="w-full max-w-md">
         <form
           onSubmit={handleSubmit}
-          className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-2xl p-8 space-y-6"
+          className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-2xl p-8 space-y-6 max-h-[90vh] overflow-y-auto"
         >
           <h1 className="text-3xl font-bold text-center text-white mb-6">
             Adicionar Novo Jogo
@@ -131,18 +179,69 @@ export default function AdicionarJogoPage() {
           </div>
 
           <div>
+            <label htmlFor="dataSorteio" className="block text-sm font-medium text-slate-300 mb-2">
+              Data do Sorteio
+            </label>
+            <input
+              type="date"
+              id="dataSorteio"
+              value={dataSorteio}
+              onChange={(e) => setDataSorteio(e.target.value)}
+              className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 [color-scheme:dark]"
+            />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-slate-300">
+                Notas Individuais
+              </label>
+              {temNotasIndividuais && (
+                <span className="text-xs text-sky-400 font-semibold">
+                  Média: {mediaPreview.toFixed(2)}
+                </span>
+              )}
+            </div>
+            <div className="space-y-2 bg-slate-900/50 p-4 rounded-lg border border-slate-700">
+              {membrosDisponiveis.map(membro => (
+                <div key={membro} className="flex items-center gap-2">
+                  <span className="text-sm text-slate-300 w-14 flex-shrink-0">{membro}</span>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="10"
+                    placeholder="—"
+                    value={notasIndividuais[membro]?.valor ?? ''}
+                    onChange={(e) => handleNotaChange(membro, e.target.value)}
+                    className="w-20 bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-sm focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Comentário..."
+                    value={notasIndividuais[membro]?.comentario ?? ''}
+                    onChange={(e) => handleComentarioChange(membro, e.target.value)}
+                    className="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-xs focus:outline-none focus:ring-1 focus:ring-sky-500 placeholder-slate-500"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
             <label htmlFor="nota" className="block text-sm font-medium text-slate-300 mb-2">
-              Nota (0-10)
+              Nota {temNotasIndividuais ? '(calculada automaticamente)' : '(manual, 0-10)'}
             </label>
             <input
               type="number"
               id="nota"
-              value={nota}
+              value={temNotasIndividuais ? mediaPreview.toFixed(2) : nota}
               onChange={(e) => setNota(e.target.value)}
-              step="0.1"
+              step="0.01"
               min="0"
               max="10"
-              className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              readOnly={temNotasIndividuais}
+              className={`w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 ${temNotasIndividuais ? 'opacity-50 cursor-not-allowed' : ''}`}
               placeholder="Deixe em branco para nota 0"
             />
           </div>

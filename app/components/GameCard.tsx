@@ -8,6 +8,7 @@ interface GameCardProps {
   jogo: Jogo;
   onEditClick: () => void;
   onDeleteClick: () => void;
+  onViewNotas: () => void;
 }
 
 export const AWARD_ICONS: Record<string, string> = {
@@ -35,28 +36,28 @@ const getNotaColorClasses = (nota: number) => {
 };
 
 const ScoreRing = ({ nota }: { nota: number }) => {
-  const radius = 30;
+  const radius = 24;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (nota / 10) * circumference;
   const { base } = getNotaColorClasses(nota);
 
   return (
-    <svg width="80" height="80" viewBox="0 0 80 80" className="-rotate-90">
+    <svg width="60" height="60" viewBox="0 0 60 60" className="-rotate-90">
       <circle
-        cx="40"
-        cy="40"
+        cx="30"
+        cy="30"
         r={radius}
         stroke="rgba(255, 255, 255, 0.1)"
-        strokeWidth="6"
+        strokeWidth="4"
         fill="transparent"
       />
       <motion.circle
-        cx="40"
-        cy="40"
+        cx="30"
+        cy="30"
         r={radius}
         className={base}
         stroke="currentColor"
-        strokeWidth="6"
+        strokeWidth="4"
         fill="transparent"
         strokeLinecap="round"
         strokeDasharray={circumference}
@@ -68,16 +69,22 @@ const ScoreRing = ({ nota }: { nota: number }) => {
   );
 };
 
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr + 'T00:00:00');
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+};
 
-export function GameCard({ jogo, onEditClick, onDeleteClick }: GameCardProps) {
+export function GameCard({ jogo, onEditClick, onDeleteClick, onViewNotas }: GameCardProps) {
   const notaNumerica = parseFloat(String(jogo.nota));
   const { base, glow } = getNotaColorClasses(notaNumerica);
+  const hasNotasIndividuais = jogo.notasIndividuais && Object.keys(jogo.notasIndividuais).length > 0;
+  const numNotas = hasNotasIndividuais ? Object.keys(jogo.notasIndividuais!).length : 0;
 
   const handleActionClick = (e: React.MouseEvent, action: () => void) => {
     e.stopPropagation();
     action();
   };
-  
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const handleMouseMove = ({ clientX, clientY, currentTarget }: React.MouseEvent) => {
@@ -93,10 +100,10 @@ export function GameCard({ jogo, onEditClick, onDeleteClick }: GameCardProps) {
       animate="visible"
       variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
       whileHover="hover"
-      className="relative bg-slate-900 rounded-xl border border-slate-700/50 shadow-lg overflow-hidden group aspect-[3/4]"
+      className="relative bg-slate-900 rounded-xl border border-slate-700/50 shadow-lg overflow-hidden group flex flex-col h-full"
     >
       <motion.div
-        className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-20"
         style={{
           background: useTransform(
             [mouseX, mouseY],
@@ -105,28 +112,35 @@ export function GameCard({ jogo, onEditClick, onDeleteClick }: GameCardProps) {
         }}
       />
 
-      {jogo.imageUrl && (
-        <div className="absolute inset-0">
+      {/* Área da Imagem (Topo) */}
+      <div className="relative w-full aspect-[16/10] bg-slate-800 overflow-hidden">
+        {jogo.imageUrl ? (
           <Image
             src={jogo.imageUrl}
             alt={`Imagem do jogo ${jogo.nome}`}
             fill
             style={{ objectFit: 'cover' }}
-            className="transition-transform duration-300 group-hover:scale-105"
+            className="transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-        </div>
-      )}
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-slate-600">
+            Sem imagem
+          </div>
+        )}
 
-      <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+        {/* Overlay escuro sutil para garantir contraste das medalhas/botões */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent pointer-events-none" />
+
+        {/* Medalhas */}
         {jogo.premios && jogo.premios.length > 0 && (
-          <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+          <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
             {jogo.premios.map((premio) => (
               <div key={premio} className="group/medal relative">
-                <div className="flex items-center justify-center w-8 h-8 bg-black/40 backdrop-blur-md border border-amber-500/30 rounded-full shadow-[0_0_10px_rgba(251,191,36,0.3)] text-lg cursor-help transition-transform hover:scale-110">
+                <div className="flex items-center justify-center w-7 h-7 bg-black/60 backdrop-blur-md border border-amber-500/40 rounded-full shadow-[0_0_10px_rgba(251,191,36,0.3)] text-sm cursor-help transition-transform hover:scale-110">
                   {getIconForPremio(premio)}
                 </div>
-                <div className="absolute left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/medal:opacity-100 transition-opacity duration-200 pointer-events-none bg-black/90 text-amber-400 text-xs font-bold px-3 py-1.5 rounded-md whitespace-nowrap z-20 border border-amber-500/20 shadow-xl backdrop-blur-sm">
+                <div className="absolute left-9 top-1/2 -translate-y-1/2 opacity-0 group-hover/medal:opacity-100 transition-opacity duration-200 pointer-events-none bg-black/90 text-amber-400 text-xs font-bold px-2.5 py-1 rounded-md whitespace-nowrap z-20 border border-amber-500/20 shadow-xl backdrop-blur-sm">
                   {premio}
                 </div>
               </div>
@@ -134,41 +148,60 @@ export function GameCard({ jogo, onEditClick, onDeleteClick }: GameCardProps) {
           </div>
         )}
 
-        <motion.div variants={{ hidden: { opacity: 0 }, hover: { opacity: 1 } }} className="absolute top-4 right-4 flex gap-2 z-10">
-            <button
-              onClick={(e) => handleActionClick(e, onEditClick)}
-              aria-label="Dar Prêmio"
-              title="Dar Prêmio"
-              className="p-2 rounded-full bg-black/30 backdrop-blur-sm text-amber-400 hover:text-amber-300 transition-colors shadow-[0_0_10px_rgba(251,191,36,0.15)] hover:shadow-[0_0_15px_rgba(251,191,36,0.4)]"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-            </button>
-            <button
-              onClick={(e) => handleActionClick(e, onEditClick)}
-              aria-label="Editar jogo"
-              className="p-2 rounded-full bg-black/30 backdrop-blur-sm text-slate-300 hover:text-sky-400 transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>
-            </button>
-            <button
-              onClick={(e) => handleActionClick(e, onDeleteClick)}
-              aria-label="Deletar jogo"
-              className="p-2 rounded-full bg-black/30 backdrop-blur-sm text-slate-300 hover:text-red-400 transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
-            </button>
+        {/* Botões de Ação */}
+        <motion.div variants={{ hidden: { opacity: 0 }, hover: { opacity: 1 } }} className="absolute top-3 right-3 flex gap-1.5 z-10">
+          <button
+            onClick={(e) => handleActionClick(e, onEditClick)}
+            aria-label="Dar Prêmio"
+            title="Dar Prêmio"
+            className="p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-amber-400 hover:text-amber-300 transition-colors shadow-[0_0_10px_rgba(251,191,36,0.15)] hover:shadow-[0_0_15px_rgba(251,191,36,0.4)]"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" /></svg>
+          </button>
+          <button
+            onClick={(e) => handleActionClick(e, onEditClick)}
+            aria-label="Editar jogo"
+            className="p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-slate-300 hover:text-sky-400 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>
+          </button>
+          <button
+            onClick={(e) => handleActionClick(e, onDeleteClick)}
+            aria-label="Deletar jogo"
+            className="p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-slate-300 hover:text-red-400 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+          </button>
         </motion.div>
-        
-        <div className="flex justify-between items-end">
-          <div className="flex-1 pr-4">
-            <h2 className="text-2xl font-bold text-white mb-1 drop-shadow-lg">{jogo.nome}</h2>
-            <p className="text-slate-300 capitalize drop-shadow-lg">{jogo.genero}</p>
+      </div>
+
+      {/* Área de Dados (Base) */}
+      <div className="p-4 flex-1 flex flex-col justify-between bg-slate-900 border-t border-slate-800">
+        <div className="flex justify-between items-start gap-3">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-xl font-bold text-white mb-1 truncate" title={jogo.nome}>{jogo.nome}</h2>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm font-medium text-sky-400/90 capitalize bg-sky-900/30 px-2 py-0.5 rounded border border-sky-800/50">
+                {jogo.genero}
+              </span>
+              {jogo.dataSorteio && (
+                <span className="text-xs text-slate-400 flex items-center gap-1">
+                  📅 {formatDate(jogo.dataSorteio)}
+                </span>
+              )}
+            </div>
           </div>
-          <div className="relative flex-shrink-0">
+
+          <div className="relative flex-shrink-0 cursor-pointer group/score" onClick={(e) => handleActionClick(e, onViewNotas)} title="Ver notas individuais">
             <ScoreRing nota={notaNumerica} />
-            <span className={`absolute inset-0 flex items-center justify-center text-2xl font-bold ${base} drop-shadow-lg ${glow}`}>
+            <span className={`absolute inset-0 flex items-center justify-center text-lg font-bold ${base} ${glow}`}>
               {notaNumerica.toFixed(1)}
             </span>
+            {hasNotasIndividuais && (
+              <span className="absolute -bottom-1 -right-1 flex items-center justify-center w-5 h-5 text-[10px] font-bold bg-sky-500 text-white rounded-full border-2 border-slate-900 shadow-lg group-hover/score:scale-110 transition-transform">
+                {numNotas}
+              </span>
+            )}
           </div>
         </div>
       </div>
