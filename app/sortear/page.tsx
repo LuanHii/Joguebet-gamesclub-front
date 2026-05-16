@@ -89,7 +89,7 @@ export default function SortearPage() {
         clearInterval(raffleInterval);
         spinningSoundRef.current?.pause();
         winSoundRef.current?.play();
-        const finalWinner = "Silksong";
+        const finalWinner = chosenWinner;
         setWinner(finalWinner);
         setRafflingItem(finalWinner);
         setIsRaffling(false);
