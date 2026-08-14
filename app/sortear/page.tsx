@@ -7,20 +7,21 @@ import Confetti from 'react-confetti';
 import { motion, useAnimation } from 'framer-motion';
 
 const gameCategories = {
-    todos: ["fps", "plataforma", "humor", "simulador", "futurista", "casual", "visual novel", "action rpg", "ninja", "terror", "pixel art", "roguelike", "aventura"],
-    fps: ["Jogos ainda não sorteados"],
-    rpg: ["Jogos ainda não sorteados"],
+    todos: ["fps", "plataforma", "Metroidvania", "simulador", "futurista", "esporte", "visual novel", "action rpg", "ninja", "terror", "pixel art", "roguelike", "aventura"],
+    fps: ["DUSK", "ULTRAKILL", "Gunfire Reborn", "Metal Garden", "Black Mesa", "Forgive Me Father", "Warhammer 40,000: Boltgun", "AVIÃOZINHO DO TRÁFICO 3:ABRI UM PORTAL PRO INFERNO NA FAVELA TENTANDO REVIVER MIT AIA E PRECISO FECHAR", "Easy Red 2", "Outlaws + Handful of Missions: Remaster", "TAMASHIKA", "MULLET MADJACK", "Anger Foot", "BPM: Bullets Per Minute"],
+    rpg: ["Ys Origin", "Cat Quest III", "NOBODY SAVES THE WORLD", "Ashen", "The Witcher: Enhanced Edition Director's Cut", "DELTARUNE", "TORCHLIGHT 2", "young souls", "Lunacid", "ELDEST SOULS"
+    ],
     plataforma: ["Spiritfarer", "Gravity Circuit", "BZZT, Planet of Lana", "ITORAH", "ElecHead", "Toree3D", "Kirby", "BADLAND", "Convergence"],
-    humor: ["Jogos ainda não sorteados"],
-    simulador: ["Jogos ainda não sorteados"],
-    futurista: ["Jogos ainda não sorteados"],
-    casual: ["Jogos ainda não sorteados"],
-    visual_novel: ["Winter Novel", "STEINS;GATE", "VA-11 Hall-A: Cyberpunk Bartender Action", "Danganronpa: Trigger Happy Havoc", "Trouble Comes Twice", "Please Be Happy", "Coffee Talks", "Room of depression", "Needy girl overdose", "Teatro dos finais infelizes", "one night", "hot springs"],
+    Metroidvania: ["Jogos ainda não sorteados"],
+    simulador: ["MegaAquarium", "WolfQuest: Anniversary Edition", "Discounty", "Kerbal Space Program", "Mudborne", "Civilization IV", "DREDGE", "SlimeRancher 2", "Coral Island", "Easy Delivery Co.", "Reus 2", "Little Witch in the Woods"],
+    futurista: ["The Plane Effect", "SONOKUNI", "Narita Boy", "Tacoma", "Psychroma", "Jenny the Witch", "Sable", "Cloudpunk", "Katana Zero", "Au Revoir", "MIO: Memories in Orbit", "Cosmic Wheel Sisterhood", "Fallen Knight"],
+    esporte: ["Jogos ainda não sorteados"],
+    visual_novel: ["Winter Novel", "STEINS;GATE", "VA-11 Hall-A: Cyberpunk Bartender Action", "Danganronpa: Trigger Happy Havoc", "Trouble Comes Twice", "Please Be Happy", "Coffee Talks", "Needy girl overdose", "Teatro dos finais infelizes", "one night", "hot springs"],
     ninja: ["Jogos ainda não sorteados"],
-    terror: ["Jogos ainda não sorteados"],
-    pixel_art: ["Jogos ainda não sorteados"],
-    roguelike: ["Darkest Dungeon", "Desktop Survivors 98", "Rogue Legacy 2", "Death or Treat", "Sundered®: Eldritch Edition", "Magic Typo", "City Of Beats", "The Spell Brigade", "Have a Nice Death"],
-    aventura: ["Jogos ainda não sorteados"]
+    terror: [ "Alien: Isolation", "SILENT HILL 3", "Alan Wake", "No, I'm not a Human", "Fear the Spotlight", "INMOST", "Amnesia: The Dark Descent", "SILENT HILL", "Into the Pit", "FATAL FRAME II: Crimson Butterfly REMAKE","Mouthwashing"],
+    pixel_art: ["Cast n Chill", "Skul: The Hero Slayer", "Sea of Stars", "Potion Permit", "UNSIGHTED", "Rain World", "Hammerwatch Anniversary Edition", "Pizza Tower", "Dandara: Trials of Fear Edition"],
+    roguelike: ["Darkest Dungeon", "Rogue Legacy 2", "Death or Treat", "Sundered®: Eldritch Edition", "Magic Typo", "City Of Beats", "The Spell Brigade", "Have a Nice Death"],
+    aventura: ["Omno", "Bayonetta", "Zelda: Wind Waker", "Cassette Beasts", "A Lenda do Herói - Edição Definitiva", "Xaolin Showdown", "Devil May Cry HD Collection", "Alice: Madness Returns", "Blood Will Tell: Tezuka Osamu's Dororo"]
 };
 
 export default function SortearPage() {
